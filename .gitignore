@@ -1,4 +1,27 @@
+# Windows executables
 *.exe
+
+# Linux executables (if you name your output 'main' or 'app')
+main
+app
+a.out
+atmSimulator
+
+# Object files and libraries
 *.o
+*.out
+*.so
+*.a
+
+# Build directories
+build/
+bin/
+obj/
+
+# IDE and System files
 .vscode/
+.DS_Store
+*.swp
+
+# Database/Private files
 userInfo.txt
