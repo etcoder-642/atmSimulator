@@ -24,7 +24,7 @@ vector<string> splitString(string str)
 {
     vector<string> a;
     string temp;
-    for (int i = 0; i <= str.length(); i++)
+    for (int i = 0; i < str.length(); i++)
     {
         if (str[i] != ' ')
         {
@@ -43,7 +43,7 @@ vector<string> splitString(string str)
     return a;
 }
 
-void updateFile(vector<Wallet> data)
+void updateFile(const vector<Wallet> &data)
 {
     ofstream userInfo("userInfo.txt");
     for (int i = 0; i < data.size(); i++)
@@ -53,9 +53,12 @@ void updateFile(vector<Wallet> data)
     userInfo.close();
 }
 
-bool checkNameExist(vector<Wallet> data, string name){
-    for(int i = 0; i < data.size(); i++){
-        if(data[i].userName == name){
+bool checkNameExist(const vector<Wallet> &data, string name)
+{
+    for (int i = 0; i < data.size(); i++)
+    {
+        if (data[i].userName == name)
+        {
             return true;
         }
     }

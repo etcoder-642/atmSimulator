@@ -2,7 +2,7 @@
 #include <string>
 #include <cstdlib>
 #include <fstream>
-#include "utils.cpp"
+#include "utils.h"
 #include "Wallet.h"
 
 using namespace std;
@@ -123,8 +123,6 @@ int main()
     {
         while (getline(userInfo, line))
         {
-            // cout << "Found: " << line << endl;
-            cout << line << endl;
             vector<string> data = splitString(line);
             Wallet tempWallet;
             tempWallet.userName = data[0];
@@ -134,7 +132,7 @@ int main()
         }
     }
 
-    cout << "Master String: " << masterString << endl;
+    // cout << "Master String: " << masterString << endl;
 
     int initialVal;
 
@@ -159,10 +157,10 @@ int main()
             cout << "Enter Currect Account Balance: ";
             cin >> myWallet.balance;
             masterData.push_back(myWallet);
-            for (Wallet w : masterData)
-            {
-                masterString += w.userName + " " + w.password + " " + to_string(w.balance) + '\n';
-            }
+            // for (Wallet w : masterData)
+            // {
+            //     masterString += w.userName + " " + w.password + " " + to_string(w.balance) + '\n';
+            // }
             currentIndex = masterData.size() - 1;
             cout << masterString;
             cout << myWallet.userName << " " << myWallet.password << " " << myWallet.balance << endl;
@@ -190,8 +188,7 @@ int main()
                 if (tempName == masterData[i].userName)
                 {
                     foundIndex = i;
-                    cout << "Wrong Password";
-                    continue;
+                    break;
                 }
             }
             if (foundIndex == -1)
