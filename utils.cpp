@@ -7,37 +7,57 @@
 
 using namespace std;
 
-bool checkFile(string fileName) {
+bool checkFile(string fileName)
+{
     ifstream file(fileName);
-    if(file){
+    if (file)
+    {
         return true;
-    }else{
+    }
+    else
+    {
         return false;
     }
 }
 
-vector<string> splitString(string str) {
+vector<string> splitString(string str)
+{
     vector<string> a;
     string temp;
-    for(int i = 0; i<=str.length(); i++){
-        if(str[i]!= ' '){
+    for (int i = 0; i <= str.length(); i++)
+    {
+        if (str[i] != ' ')
+        {
             temp += str[i];
-        }else {
+        }
+        else
+        {
             a.push_back(temp);
             temp = "";
         }
     }
-    if(!temp.empty()){
+    if (!temp.empty())
+    {
         a.push_back(temp);
     }
     return a;
 }
 
-void updateFile(vector<Wallet> data){
-    for(int i = 0; i < data.size(); i++){
-        ofstream userInfo("userInfo.txt");
-        userInfo << data[i].userName << " " << data[i].password << " " << data[i].balance;
-        userInfo.close();
+void updateFile(vector<Wallet> data)
+{
+    ofstream userInfo("userInfo.txt");
+    for (int i = 0; i < data.size(); i++)
+    {
+        userInfo << data[i].userName << " " << data[i].password << " " << data[i].balance << endl;
     }
+    userInfo.close();
+}
 
+bool checkNameExist(vector<Wallet> data, string name){
+    for(int i = 0; i < data.size(); i++){
+        if(data[i].userName == name){
+            return true;
+        }
+    }
+    return false;
 }

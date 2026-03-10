@@ -99,15 +99,24 @@ void mainLogic(int &value, string userName, float &balance)
     }
 }
 
+void initialPage(int &initialVal)
+{
+    cout << "========== ATM SIMULATOR =========" << endl;
+    cout << "Choose what you would do" << endl;
+    cout << "1. Sign Up" << endl;
+    cout << "2. Log In" << endl;
+    cin >> initialVal;
+}
+
 int main()
 {
 
     Wallet myWallet;
-
     vector<Wallet> masterData;
 
     string line;
     int currentIndex;
+    int value;
     ifstream userInfo("userInfo.txt");
     string masterString = "";
     if (userInfo)
@@ -125,66 +134,84 @@ int main()
         }
     }
 
-    for (Wallet w : masterData)
-    {
-        masterString += w.userName + " " + w.password + " " + to_string(w.balance) + '\n';
-    }
-
     cout << "Master String: " << masterString << endl;
 
-    int value;
     int initialVal;
-    cout << "========== ATM SIMULATOR =========" << endl;
-    cout << "Choose what you would do" << endl;
-    cout << "1. Sign Up" << endl;
-    cout << "2. Log In" << endl;
-    cin >> initialVal;
 
-    if (initialVal == 1)
-    {
-        cout << "Enter User Name: ";
-        cin >> myWallet.userName;
-        cout << "Enter Account Password: ";
-        cin >> myWallet.password;
-        cout << "Enter Currect Account Balance: ";
-        cin >> myWallet.balance;
-        masterData.push_back(myWallet);
-        currentIndex = masterData.size() - 1;
-        updateFile(masterData);
-    }
-    else if (initialVal == 2)
-    {
-        string tempName;
-        string tempPassword;
-        cout << "Enter User Name: ";
-        cin >> tempName;
-        cout << "Enter Password: ";
-        cin >> tempPassword;
+    bool authenticated = false;
 
-        if (masterData.empty())
+    while (!authenticated)
+    {
+        initialPage(initialVal);
+
+        if (initialVal == 1)
         {
-            cout << "Error: No previous accounts exist." << endl;
-            return 0;
-        }
-        int checkSuccess = 0;
-        for (int i = 0; i < masterData.size(); i++)
-        {
-            if (tempName == masterData[i].userName)
+            cout << "Enter User Name: ";
+            cin >> myWallet.userName;
+            if (checkNameExist(masterData, myWallet.userName))
             {
-                if (tempPassword == masterData[i].password)
+                cout << "Provided name already exists." << endl;
+                continue;
+            }
+
+            cout << "Enter Account Password: ";
+            cin >> myWallet.password;
+            cout << "Enter Currect Account Balance: ";
+            cin >> myWallet.balance;
+            masterData.push_back(myWallet);
+            for (Wallet w : masterData)
+            {
+                masterString += w.userName + " " + w.password + " " + to_string(w.balance) + '\n';
+            }
+            currentIndex = masterData.size() - 1;
+            cout << masterString;
+            cout << myWallet.userName << " " << myWallet.password << " " << myWallet.balance << endl;
+            updateFile(masterData);
+            authenticated = true;
+        }
+        else if (initialVal == 2)
+        {
+            string tempName;
+            string tempPassword;
+            cout << "Enter User Name: ";
+            cin >> tempName;
+            cout << "Enter Password: ";
+            cin >> tempPassword;
+
+            if (masterData.empty())
+            {
+                cout << "Error: No previous accounts exist." << endl;
+                continue;
+            }
+            int checkSuccess = 0;
+            int foundIndex = -1;
+            for (int i = 0; i < masterData.size(); i++)
+            {
+                if (tempName == masterData[i].userName)
                 {
-                    cout << "Successfully Logged In!" << endl;
-                    cout << "Welcome " << masterData[i].userName << endl;
-                    currentIndex = i;
-                    checkSuccess++;
-                    break;
+                    foundIndex = i;
+                    cout << "Wrong Password";
+                    continue;
                 }
             }
-        }
-        if (checkSuccess == 0)
-        {
-            cout << "This Account doesn't exist." << endl;
-            return 0;
+            if (foundIndex == -1)
+            {
+                cout << "This Account doesn't exist." << endl;
+                continue;
+            }
+            else
+            {
+                if (tempPassword == masterData[foundIndex].password)
+                {
+                    cout << "Successfully Logged In!" << endl;
+                    cout << "Welcome " << masterData[foundIndex].userName << endl;
+                    currentIndex = foundIndex;
+                    authenticated = true;
+                }else {
+                    cout << "Wrong Password! Try Again!" << endl;
+                    continue;
+                }
+            }
         }
     }
 
@@ -192,6 +219,7 @@ int main()
     while (value != 4)
     {
         mainLogic(value, masterData[currentIndex].userName, masterData[currentIndex].balance);
+        updateFile(masterData);
     }
     return 0;
 }
