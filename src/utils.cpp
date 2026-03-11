@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <vector>
-#include "Wallet.h"
+#include "../include/Wallet.h"
 
 using namespace std;
 
@@ -45,7 +45,7 @@ vector<string> splitString(string str)
 
 void updateFile(const vector<Wallet> &data)
 {
-    ofstream userInfo("userInfo.txt");
+    ofstream userInfo("data/userInfo.txt");
     for (int i = 0; i < data.size(); i++)
     {
         userInfo << data[i].userName << " " << data[i].password << " " << data[i].balance << endl;
@@ -54,7 +54,7 @@ void updateFile(const vector<Wallet> &data)
 }
 
 void updateTransaction(vector<Wallet>& data, int num){
-    ofstream transaction("transaction.txt");
+    ofstream transaction("data/transaction.txt");
     for(int i = 0; i < data.size(); i++){
         transaction << i;
         for(int j = 0; j < data[i].txRecord.size(); j++){

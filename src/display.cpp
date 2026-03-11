@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Wallet.h"
+#include "../include/Wallet.h"
 
 using namespace std;
 

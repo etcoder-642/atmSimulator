@@ -2,9 +2,10 @@
 #include <string>
 #include <cstdlib>
 #include <fstream>
-#include "utils.h"
-#include "Wallet.h"
-#include "display.h"
+
+#include "../include/Wallet.h"
+#include "../include/display.h"
+#include "../include/utils.h"
 
 using namespace std;
 
@@ -98,7 +99,7 @@ int main()
     string line;
     int currentIndex;
     int value;
-    ifstream userInfo("userInfo.txt");
+    ifstream userInfo("data/userInfo.txt");
     string masterString = "";
     if (userInfo)
     {
@@ -113,7 +114,7 @@ int main()
         }
     }
 
-    ifstream transaction("transaction.txt");
+    ifstream transaction("data/transaction.txt");
     if(transaction) {
         while(getline(transaction, line)){
             vector<string> data = splitString(line);
