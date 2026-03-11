@@ -10,5 +10,6 @@ bool checkFile(string fileName);
 vector<string> splitString(string str);
 void updateFile(const vector<Wallet>& data);
 bool checkNameExist(const vector<Wallet>& data, string name);
+void updateTransaction(vector<Wallet>& data, int num);
 
 #endif

@@ -53,6 +53,18 @@ void updateFile(const vector<Wallet> &data)
     userInfo.close();
 }
 
+void updateTransaction(vector<Wallet>& data, int num){
+    ofstream transaction("transaction.txt");
+    for(int i = 0; i < data.size(); i++){
+        transaction << i;
+        for(int j = 0; j < data[i].txRecord.size(); j++){
+            transaction << " " << data[i].txRecord[j];
+        }
+        transaction << endl;
+    }
+    transaction.close();
+}
+
 bool checkNameExist(const vector<Wallet> &data, string name)
 {
     for (int i = 0; i < data.size(); i++)

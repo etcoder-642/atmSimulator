@@ -4,6 +4,7 @@
 #include <fstream>
 #include "utils.h"
 #include "Wallet.h"
+#include "display.h"
 
 using namespace std;
 
@@ -18,44 +19,27 @@ using namespace std;
         - User can check Wallet Balance
  */
 
-void userDisplay(string user, int &value, int state, float &balance)
-{
-    if (state == 1)
-    {
-        cout << "Hello " << user << endl;
-        cout << "Choose what to do: " << endl;
-        cout << "1. Deposit Money" << endl;
-        cout << "2. Withdraw Money" << endl;
-        cout << "3. Check Balance" << endl;
-        cout << "4. Exit" << endl;
-        cin >> value;
-    }
-    else if (state == 2)
-    {
-        cout << "========== YOUR WALLET =========" << endl;
-        cout << "User: " << user << endl;
-        cout << "Current Balance: " << balance << endl;
-    }
-};
 
-void userAction(int value, float amount, string user, float &balance)
+void userAction(int value, float amount, vector<Wallet>& data, int num)
 {
     switch (value)
     {
     case 1:
-        balance += amount;
-        cout << user << ", You have successfully deposited " << amount << " Birr" << endl;
+        data[num].balance += amount;
+        cout << data[num].userName << ", You have successfully deposited " << amount << " Birr" << endl;
+        data[num].txRecord.push_back(amount);
         break;
     case 2:
     {
-        if (amount > balance)
+        if (amount > data[num].balance)
         {
             cout << "Oops! You're broke for that!" << endl;
         }
         else
         {
-            balance -= amount;
-            cout << user << ", You have successfully withdrawn " << amount << " Birr" << endl;
+            data[num].balance -= amount;
+            cout << data[num].userName << ", You have successfully withdrawn " << amount << " Birr" << endl;
+            data[num].txRecord.push_back(-amount);
         }
     }
     break;
@@ -64,7 +48,7 @@ void userAction(int value, float amount, string user, float &balance)
     }
 }
 
-void mainLogic(int &value, string userName, float &balance)
+void mainLogic(int &value, vector<Wallet>& data, int num)
 {
     float amount;
     switch (value)
@@ -73,39 +57,35 @@ void mainLogic(int &value, string userName, float &balance)
     {
         cout << "Enter Amount to be Deposited: ";
         cin >> amount;
-        userAction(value, amount, userName, balance);
-        userDisplay(userName, value, 1, balance);
+        userAction(value, amount, data, num);
+        userDisplay(data[num].userName, value, 1, data[num].balance);
     }
     break;
     case 2:
     {
         cout << "Enter Amount to withdraw: ";
         cin >> amount;
-        userAction(value, amount, userName, balance);
-        userDisplay(userName, value, 1, balance);
+        userAction(value, amount, data, num);
+        userDisplay(data[num].userName, value, 1, data[num].balance);
     }
     break;
     case 3:
     {
-        userDisplay(userName, value, 2, balance);
-        userDisplay(userName, value, 1, balance);
+        userDisplay(data[num].userName, value, 2, data[num].balance);
+        userDisplay(data[num].userName, value, 1, data[num].balance);
     }
     break;
     case 4:
+    {
+        displayTransactionHistory(data, num);
+        userDisplay(data[num].userName, value, 1, data[num].balance);
+    }
+    case 5:
         exit(0);
         break;
     default:
         break;
     }
-}
-
-void initialPage(int &initialVal)
-{
-    cout << "========== ATM SIMULATOR =========" << endl;
-    cout << "Choose what you would do" << endl;
-    cout << "1. Sign Up" << endl;
-    cout << "2. Log In" << endl;
-    cin >> initialVal;
 }
 
 int main()
@@ -130,6 +110,11 @@ int main()
             tempWallet.balance = stof(data[2]);
             masterData.push_back(tempWallet);
         }
+    }
+
+    ifstream transaction("transaction.txt");
+    if(transaction) {
+        
     }
 
     // cout << "Master String: " << masterString << endl;
@@ -213,10 +198,17 @@ int main()
     }
 
     userDisplay(masterData[currentIndex].userName, value, 1, masterData[currentIndex].balance);
-    while (value != 4)
+    while (value != 5)
     {
-        mainLogic(value, masterData[currentIndex].userName, masterData[currentIndex].balance);
+        mainLogic(value, masterData, currentIndex);
+        updateTransaction(masterData, currentIndex);
         updateFile(masterData);
+            // for (Wallet w : masterData)
+            // {
+            //     masterString += w.userName + " " + w.password + " " + to_string(w.balance) + " " + to_string(w.txRecord[0]) + " " + to_string(w.txRecord[1]);
+            // }
+            // cout << masterString;
+        // updateTransactionVector(allTransactions, masterData);
     }
     return 0;
 }
