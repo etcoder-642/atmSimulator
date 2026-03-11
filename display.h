@@ -9,7 +9,8 @@
 using namespace std;
 
 void initialPage(int &initialVal);
-void userDisplay(string user, int &value, int state, float &balance);
+void userDisplay(string user, int &value, float &balance);
 void displayTransactionHistory(const vector<Wallet>& data, int num);
+void displayBalance(string user, float balance);
 
 #endif

@@ -58,7 +58,7 @@ void mainLogic(int &value, vector<Wallet>& data, int num)
         cout << "Enter Amount to be Deposited: ";
         cin >> amount;
         userAction(value, amount, data, num);
-        userDisplay(data[num].userName, value, 1, data[num].balance);
+        userDisplay(data[num].userName, value, data[num].balance);
     }
     break;
     case 2:
@@ -66,20 +66,21 @@ void mainLogic(int &value, vector<Wallet>& data, int num)
         cout << "Enter Amount to withdraw: ";
         cin >> amount;
         userAction(value, amount, data, num);
-        userDisplay(data[num].userName, value, 1, data[num].balance);
+        userDisplay(data[num].userName, value, data[num].balance);
     }
     break;
     case 3:
     {
-        userDisplay(data[num].userName, value, 2, data[num].balance);
-        userDisplay(data[num].userName, value, 1, data[num].balance);
+        displayBalance(data[num].userName, data[num].balance);
+        userDisplay(data[num].userName, value, data[num].balance);
     }
     break;
     case 4:
     {
         displayTransactionHistory(data, num);
-        userDisplay(data[num].userName, value, 1, data[num].balance);
+        userDisplay(data[num].userName, value, data[num].balance);
     }
+    break;
     case 5:
         exit(0);
         break;
@@ -114,7 +115,12 @@ int main()
 
     ifstream transaction("transaction.txt");
     if(transaction) {
-        
+        while(getline(transaction, line)){
+            vector<string> data = splitString(line);
+            for(int i = 1; i < data.size();i++){
+                masterData[stoi(data[0])].txRecord.push_back(stof(data[i]));
+            } 
+        }
     }
 
     // cout << "Master String: " << masterString << endl;
@@ -197,7 +203,7 @@ int main()
         }
     }
 
-    userDisplay(masterData[currentIndex].userName, value, 1, masterData[currentIndex].balance);
+    userDisplay(masterData[currentIndex].userName, value, masterData[currentIndex].balance);
     while (value != 5)
     {
         mainLogic(value, masterData, currentIndex);
@@ -208,7 +214,6 @@ int main()
             //     masterString += w.userName + " " + w.password + " " + to_string(w.balance) + " " + to_string(w.txRecord[0]) + " " + to_string(w.txRecord[1]);
             // }
             // cout << masterString;
-        // updateTransactionVector(allTransactions, masterData);
     }
     return 0;
 }
