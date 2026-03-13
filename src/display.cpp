@@ -104,7 +104,7 @@ void displaySignUpPage(Wallet &myWallet)
     cin >> myWallet.userName;
     cout << "Enter Account Password: ";
     cin >> myWallet.password;
-    cout << "Enter Currect Account Balance: ";
+    cout << "Enter Current Account Balance: ";
     cin >> myWallet.balance;
 }
 
