@@ -7,21 +7,24 @@ using namespace std;
 
 void userDisplay(string user, int &value, float &balance)
 {
-    cout << "Hello " << user << endl;
     cout << "Choose what to do: " << endl;
     cout << "1. Deposit Money" << endl;
     cout << "2. Withdraw Money" << endl;
     cout << "3. Check Balance" << endl;
     cout << "4. See Transaction History" << endl;
-    cout << "5. Exit" << endl;
+    cout << "5. Transfer Money" << endl;
+    cout << "6. Exit" << endl;
     cin >> value;
 };
 
 void displayBalance(string user, float balance)
 {
+    cout << "------------------------------------------------------------" << endl;
     cout << "========== YOUR WALLET =========" << endl;
     cout << "User: " << user << endl;
     cout << "Current Balance: " << balance << endl;
+    cout << "------------------------------------------------------------" << endl;
+    cout << endl;
 }
 
 void initialPage(int &initialVal)
@@ -35,6 +38,7 @@ void initialPage(int &initialVal)
 
 void displayTransactionHistory(const vector<Wallet> &data, int num)
 {
+    cout << "------------------------------------------------------------" << endl;
     cout << "============= " << data[num].userName << "'s TRANSACTION HISTORY =============" << endl;
     if(data[num].txRecord.size() == 0){
         cout << " YOU HAVE NO TRANSACRION HISTORY" << endl;
@@ -51,4 +55,6 @@ void displayTransactionHistory(const vector<Wallet> &data, int num)
             cout << "Withdraw: " << data[num].txRecord[i] << endl;
         }
     }
+    cout << "------------------------------------------------------------" << endl;
+    cout << endl;
 }

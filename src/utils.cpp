@@ -76,3 +76,26 @@ bool checkNameExist(const vector<Wallet> &data, string name)
     }
     return false;
 }
+
+void handleMoneyTransfer(vector<Wallet>& data, int index, string receiverName, float amount){
+    bool checkSuccess = false;
+    if(data[index].balance < amount){
+        cout << "You don't have enough Amount!" << endl;
+        return;
+    }
+    for(int i = 0;i < data.size(); i++){
+        if(receiverName == data[i].userName){
+            data[index].balance -= amount;
+            data[i].balance += amount;
+            data[index].txRecord.push_back(-amount);
+            data[i].txRecord.push_back(amount);
+            cout << "Money Transfer Successful!" << endl;
+            cout << amount << " Birr withdrawn from: " << data[index].userName << endl;
+            cout << amount << " Birr deposited to: " << data[i].userName << endl;
+            checkSuccess = true;
+        }
+    }
+    if(!checkSuccess){
+        cout << "ERROR: TRANSFER PROCESS FAILED!";
+    }
+}

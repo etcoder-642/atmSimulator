@@ -21,7 +21,7 @@ using namespace std;
  */
 
 
-void userAction(int value, float amount, vector<Wallet>& data, int num)
+void accountAction(int value, float amount, vector<Wallet>& data, int num)
 {
     switch (value)
     {
@@ -58,7 +58,7 @@ void mainLogic(int &value, vector<Wallet>& data, int num)
     {
         cout << "Enter Amount to be Deposited: ";
         cin >> amount;
-        userAction(value, amount, data, num);
+        accountAction(value, amount, data, num);
         userDisplay(data[num].userName, value, data[num].balance);
     }
     break;
@@ -66,7 +66,7 @@ void mainLogic(int &value, vector<Wallet>& data, int num)
     {
         cout << "Enter Amount to withdraw: ";
         cin >> amount;
-        userAction(value, amount, data, num);
+        accountAction(value, amount, data, num);
         userDisplay(data[num].userName, value, data[num].balance);
     }
     break;
@@ -83,6 +83,18 @@ void mainLogic(int &value, vector<Wallet>& data, int num)
     }
     break;
     case 5:
+    {
+        string receiverName;
+        float sentAmount;
+        cout << "Enter Name of Person you want to transfer to: ";
+        cin >> receiverName;
+        cout << "Enter Amount to send: ";
+        cin >> sentAmount;
+        handleMoneyTransfer(data, num, receiverName, sentAmount);
+        userDisplay(data[num].userName, value, data[num].balance);
+    }
+    break;
+    case 6:
         exit(0);
         break;
     default:
@@ -205,7 +217,7 @@ int main()
     }
 
     userDisplay(masterData[currentIndex].userName, value, masterData[currentIndex].balance);
-    while (value != 5)
+    while (value != 6)
     {
         mainLogic(value, masterData, currentIndex);
         updateTransaction(masterData, currentIndex);

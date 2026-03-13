@@ -11,5 +11,6 @@ vector<string> splitString(string str);
 void updateFile(const vector<Wallet>& data);
 bool checkNameExist(const vector<Wallet>& data, string name);
 void updateTransaction(vector<Wallet>& data, int num);
+void handleMoneyTransfer(vector<Wallet>& data, int index, string receiverName, float amount);
 
 #endif
