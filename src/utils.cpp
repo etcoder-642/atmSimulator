@@ -142,3 +142,80 @@ void loadTransactionData(vector<Wallet> &masterData)
         }
     }
 }
+
+bool authenticateUser(vector<Wallet> &data, string tempName, string tempPassword, int &index)
+{
+    while (true)
+    {
+        if (data.empty())
+        {
+            cout << "Error: No previous accounts exist." << endl;
+            return false;
+        }
+        int checkSuccess = 0;
+        int foundIndex = -1;
+        for (int i = 0; i < data.size(); i++)
+        {
+            if (tempName == data[i].userName)
+            {
+                foundIndex = i;
+                break;
+            }
+        }
+        if (foundIndex == -1)
+        {
+            cout << "This Account doesn't exist." << endl;
+            return false;
+        }
+        else
+        {
+            if (tempPassword == data[foundIndex].password)
+            {
+                cout << "Successfully Logged In!" << endl;
+                cout << "Welcome " << data[foundIndex].userName << endl;
+                index = foundIndex;
+                return true;
+            }
+            else
+            {
+                cout << "Wrong Password! Try Again!" << endl;
+                return false;
+            }
+        }
+    }
+}
+
+
+bool authenticateAdmin(Admin adminAcc, string tempName, string tempPassword)
+{
+    if(tempName == adminAcc.adminName){
+        if(tempPassword == adminAcc.adminPassword){
+            cout << "Successfully Logged In" << endl;
+            return true;
+        }
+        cout << "Wrong Password" << endl;
+        return false;
+    } else return false;
+}
+
+void uploadAdminData(const Admin& adminAcc)
+{
+    ofstream admin("data/admin.txt");
+    admin << adminAcc.adminName << " " << adminAcc.adminPassword;
+}
+
+void loadAdminData(Admin& adminAcc)
+{
+    ifstream admin("data/admin.txt");
+    string line;
+    if(admin)
+    {
+        while (getline(admin, line))
+        {
+            vector<string> data = splitString(line);
+            adminAcc.adminName = data[0];
+            adminAcc.adminPassword = data[1];
+        }
+        
+    }
+}

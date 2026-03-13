@@ -6,6 +6,7 @@
 #include "../include/Wallet.h"
 #include "../include/display.h"
 #include "../include/utils.h"
+#include "../include/admin.h"
 
 using namespace std;
 
@@ -99,10 +100,6 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
     }
     break;
     case 7:
-    {
-    }
-    break;
-    case 8:
         break;
     default:
         break;
@@ -112,18 +109,20 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
 int main()
 {
 
-    Wallet myWallet;
     vector<Wallet> masterData;
+    Admin adminAcc;
 
     int initialVal;
     int currentIndex;
     int value;
     string masterString = "";
+    string adminPassword = "admin";
+    int adminChoice;
 
     loadUserData(masterData);
     loadTransactionData(masterData);
- 
-    while (value != 8 && initialVal != 4)
+
+    while (value != 7 && initialVal != 4)
     {
         value = 0;
 
@@ -139,18 +138,13 @@ int main()
             {
             case 1:
             {
-                cout << "Enter User Name: ";
-                cin >> myWallet.userName;
+                Wallet myWallet;
+                displaySignUpPage(myWallet);
                 if (checkNameExist(masterData, myWallet.userName))
                 {
                     cout << "Provided name already exists." << endl;
                     continue;
                 }
-
-                cout << "Enter Account Password: ";
-                cin >> myWallet.password;
-                cout << "Enter Currect Account Balance: ";
-                cin >> myWallet.balance;
                 masterData.push_back(myWallet);
                 // for (Wallet w : masterData)
                 // {
@@ -162,68 +156,41 @@ int main()
                 updateFile(masterData);
                 authenticated = true;
             }
-                break;
+            break;
             case 2:
             {
                 string tempName;
                 string tempPassword;
-                cout << "Enter User Name: ";
-                cin >> tempName;
-                cout << "Enter Password: ";
-                cin >> tempPassword;
 
-                if (masterData.empty())
-                {
-                    cout << "Error: No previous accounts exist." << endl;
-                    continue;
-                }
-                int checkSuccess = 0;
-                int foundIndex = -1;
-                for (int i = 0; i < masterData.size(); i++)
-                {
-                    if (tempName == masterData[i].userName)
-                    {
-                        foundIndex = i;
-                        break;
-                    }
-                }
-                if (foundIndex == -1)
-                {
-                    cout << "This Account doesn't exist." << endl;
-                    continue;
-                }
+                displayLogInPage(tempName, tempPassword);
+                if (authenticateUser(masterData, tempName, tempPassword, currentIndex))
+                    authenticated = true;
                 else
                 {
-                    if (tempPassword == masterData[foundIndex].password)
-                    {
-                        cout << "Successfully Logged In!" << endl;
-                        cout << "Welcome " << masterData[foundIndex].userName << endl;
-                        currentIndex = foundIndex;
-                        authenticated = true;
-                    }
-                    else
-                    {
-                        cout << "Wrong Password! Try Again!" << endl;
-                        continue;
-                    }
+                    cout << "USER AUTHENTICATION FAILED!" << endl;
+                    authenticated = false;
                 }
             }
-               break;
+            break;
             case 3:
             {
-
+                if(handleAdminSession(adminAcc, masterData) == 6) 
+                {
+                    initialVal = 4;
+                };
             }
-               break;
+            break;
             case 4:
                 break;
             default:
                 break;
             }
         }
-        if(initialVal == 4) break;
+        if (initialVal == 4)
+            break;
 
         userDisplay(masterData[currentIndex].userName, value, masterData[currentIndex].balance);
-        while (value != 8 && value != 6)
+        while (value != 7 && value != 6)
         {
             mainLogic(value, masterData, currentIndex, initialVal);
             updateTransaction(masterData, currentIndex);

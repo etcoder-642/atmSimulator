@@ -14,5 +14,9 @@ void updateTransaction(vector<Wallet>& data, int num);
 void handleMoneyTransfer(vector<Wallet>& data, int index, string receiverName, float amount);
 void loadUserData(vector<Wallet>& masterData);
 void loadTransactionData(vector<Wallet> &masterData);
+bool authenticateUser(vector<Wallet> &data, string tempName, string tempPassword, int &index);
+bool authenticateAdmin(Admin adminAcc, string tempName, string tempPassword);
+void loadAdminData(Admin& adminAcc);
+void uploadAdminData(const Admin& adminAcc);
 
 #endif

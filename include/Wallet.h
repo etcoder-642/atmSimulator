@@ -14,4 +14,10 @@ struct Wallet
     vector<float> txRecord;
 };
 
+struct Admin
+{
+    string adminName;
+    string adminPassword;
+};
+
 #endif
