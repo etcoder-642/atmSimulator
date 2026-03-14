@@ -18,5 +18,6 @@ bool authenticateUser(vector<Wallet> &data, string tempName, string tempPassword
 bool authenticateAdmin(Admin adminAcc, string tempName, string tempPassword);
 void loadAdminData(Admin& adminAcc);
 void uploadAdminData(const Admin& adminAcc);
+void systemWideAmountChange(vector<Wallet>& masterData, float amount);
 
 #endif

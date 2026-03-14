@@ -169,7 +169,6 @@ void displayAllAccounts(const vector<Wallet> &masterData, vector<int> trxnNums)
          << left << setw(23) << "BALANCE"
          << left << setw(31) << "TOTAL NUMBER OF TRANSACTIONS" << endl;
 
-
     for (int i = 0; i < masterData.size(); i++)
     {
         cout << left << setw(3) << i
@@ -181,7 +180,7 @@ void displayAllAccounts(const vector<Wallet> &masterData, vector<int> trxnNums)
     cout << endl;
 }
 
-void displaySystemActions(int& value)
+void displaySystemActions(int &value)
 {
     cout << string(80, '=') << endl;
     cout << "Choose What to do: " << endl;
@@ -189,9 +188,84 @@ void displaySystemActions(int& value)
     cout << "1. Give Global Bonus" << endl;
     cout << "2. Deduct Global Fee" << endl;
     cout << "3. System Freeze (WARNING!)" << endl;
-    cout << "4. Wipe All User Data (DANGER!!!)" << endl;
+    cout << "4. System Unfreeze" << endl;
+    cout << "5. Wipe All User Data (DANGER!!!)" << endl;
+    cout << "6. Back" << endl;
     cout << string(80, '-') << endl;
     cin >> value;
     cout << string(80, '=') << endl;
     cout << endl;
 }
+
+void displayUserSpecificActions(int &value)
+{
+    cout << string(80, '=') << endl;
+    cout << "Choose What to do: " << endl;
+    cout << string(80, '-') << endl;
+    cout << "1. View User Profile" << endl;
+    cout << "2. Freeze/Unfreeze Account" << endl;
+    cout << "3. Direct Account Deposit" << endl;
+    cout << "4. Direct Account Deduction" << endl;
+    cout << "5. Reset Password" << endl;
+    cout << "6. Delete Account" << endl;
+    cout << "7. Back" << endl;
+    cout << string(80, '-') << endl;
+    cin >> value;
+    cout << string(80, '=') << endl;
+    cout << endl;
+}
+
+void displayUserInfo(vector<Wallet> masterData, int num)
+{
+    cout << string(80, '=') << endl;
+    cout << left << setw(60) << "User Name: " << masterData[num].userName << endl;
+    cout << left << setw(60) << "User Balance: " << masterData[num].balance << endl;
+    cout << string(80, '-') << endl;
+    cout << setw(80) << "User Transaction History" << endl;
+    cout << string(80, '-') << endl;
+    cout << left << setw(60) << "Transaction Type" << "Volume" << endl;
+    for (int i = 0; i < masterData[num].txRecord.size(); i++)
+    {
+        if (masterData[num].txRecord[i] > 0)
+        {
+            cout << left << setw(60) << "Deposit" << masterData[num].txRecord[i] << endl;
+        }
+        else
+        {
+            cout << left << setw(60) << "Withdraw" << masterData[num].txRecord[i] << endl;
+        }
+    }
+    cout << string(80, '=') << endl;
+    cout << endl;
+}
+
+void displaySystemWideAccountChange(float amount)
+{
+    cout << string(80, '-') << endl;
+    if (amount > 0)
+    {
+        cout << "Successfully deposited " << amount << " for each accounts." << endl;
+    }
+    else
+    {
+        cout << "Successfully Withdrawn " << amount << " for each accounts." << endl;
+    }
+    cout << string(80, '=') << endl;
+}
+
+void displayAccountFreezeMessage(string name)
+{
+    cout << string(80, '=') << endl;
+    cout << "User " << name << "your Account have been Frozen by the Admin." << endl;
+    cout << "NO ACTIONS CAN'T BE PERFORMED CONTACT YOUR ADMIN" << endl;
+    cout << string(80, '=') << endl;
+}
+
+void displaySpecialMessage(string message)
+{
+    cout << string(80, '=') << endl;
+    cout << message << endl;
+    cout << string(80, '=') << endl;  
+    cout << endl;  
+}
+

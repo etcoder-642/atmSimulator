@@ -56,6 +56,11 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
     {
     case 1:
     {
+        if(data[num].state){
+            displayAccountFreezeMessage(data[num].userName);
+            userDisplay(data[num].userName, value, data[num].balance);
+            return;
+        }
         cout << "Enter Amount to be Deposited: ";
         cin >> amount;
         accountAction(value, amount, data, num);
@@ -64,6 +69,11 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
     break;
     case 2:
     {
+        if(data[num].state){
+            displayAccountFreezeMessage(data[num].userName);
+            userDisplay(data[num].userName, value, data[num].balance);
+            return;
+        }
         cout << "Enter Amount to withdraw: ";
         cin >> amount;
         accountAction(value, amount, data, num);
@@ -84,6 +94,11 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
     break;
     case 5:
     {
+        if(data[num].state){
+            displayAccountFreezeMessage(data[num].userName);
+            userDisplay(data[num].userName, value, data[num].balance);
+            return;
+        }
         string receiverName;
         float sentAmount;
         cout << "Enter Name of Person you want to transfer to: ";

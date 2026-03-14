@@ -12,7 +12,7 @@
 #include "../include/display.h"
 #include "../include/utils.h"
 
-int handleAdminSession(Admin &adminAcc, const vector<Wallet> &masterData);
+int handleAdminSession(Admin &adminAcc, vector<Wallet> &masterData);
 
 #endif
 

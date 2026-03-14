@@ -12,6 +12,7 @@ struct Wallet
     string userName;
     string password;
     vector<float> txRecord;
+    bool state = false;
 };
 
 struct Admin

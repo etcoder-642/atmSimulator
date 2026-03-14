@@ -20,5 +20,19 @@ void displayAdminLogInPage(string& tempName, string& tempPassword);
 void displayAdminAnalytics(float totalLiquidity, float transactionVol, float netFlow, int transactionNum, int totalUsers, float avWealth);
 void displayAllAccounts(const vector<Wallet> &masterData, vector<int> trxnNums);
 void displaySystemActions(int& value);
+void displayUserSpecificActions(int& value);
+void displayUserInfo(vector<Wallet> masterData, int num);
+void displaySystemWideAccountChange(float amount);
+void displayAccountFreezeMessage(string name);
+void displaySpecialMessage(string message);
+
+template <typename T>
+void receiveMessage(string message, T& var)
+{
+    cout << string(80, '-') << endl;
+    cout << message;
+    cin >> var;
+    cout << string(80, '-') << endl;
+}
 
 #endif

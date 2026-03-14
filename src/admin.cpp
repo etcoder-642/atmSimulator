@@ -57,13 +57,100 @@ void showAllAccounts(const vector<Wallet> &masterData)
     displayAllAccounts(masterData, trxnNums);
 }
 
-void systemWideActions(const vector<Wallet>& masterData)
+void systemWideActions(vector<Wallet> &masterData)
 {
     int systemActionChoice;
-    displaySystemActions(systemActionChoice);
+    while (systemActionChoice != 6)
+    {
+        displaySystemActions(systemActionChoice);
+        switch (systemActionChoice)
+        {
+        case 1:
+        {
+            int amount;
+            cout << "Enter Amount to Deposit: ";
+            cin >> amount;
+            systemWideAmountChange(masterData, amount);
+            displaySystemWideAccountChange(amount);
+        }
+        break;
+        case 2:
+        {
+            int amount;
+            cout << "Enter Amount to Withdrawn: ";
+            cin >> amount;
+            systemWideAmountChange(masterData, -amount);
+            displaySystemWideAccountChange(-amount);
+        }
+        break;
+        case 3:
+        {
+            int userChoice;
+            receiveMessage("Are you sure you want to do it? (Enter 1 to Cancel or 2 to Proceed): ", userChoice);
+            if (userChoice == 1)
+                continue;
+            else
+            {
+                for (int i = 0; i < masterData.size(); i++)
+                {
+                    masterData[i].state = true;
+                }
+                updateFile(masterData);
+                displaySpecialMessage("All Accounts Successfully Frozen");
+            }
+        }
+        break;
+        case 4:
+        {
+            for (int i = 0; i < masterData.size(); i++)
+            {
+                masterData[i].state = false;
+            }
+            updateFile(masterData);
+            displaySpecialMessage("All Accounts Successfully Unfrozen");
+        }
+        break;
+        case 5:
+        {
+            int userChoice;
+            receiveMessage("Are you sure you want to do it? (Enter 1 to cancel or 2 to proceed): ", userChoice);
+            if(userChoice == 1) continue;
+            else {
+                masterData.clear();
+                masterData.shrink_to_fit();
+                updateFile(masterData);
+                displaySpecialMessage("ALL ACCOUNTS HAVE SUCCESSFULLY BEEN ERASED!");
+            }
+        }
+        default:
+            break;
+        }
+    }
 }
 
-int handleAdminSession(Admin& adminAcc, const vector<Wallet>& masterData)
+void userSpecificActions(const vector<Wallet> &masterData)
+{
+    int userActionChoice;
+    while (userActionChoice != 7)
+    {
+        displayUserSpecificActions(userActionChoice);
+        switch (userActionChoice)
+        {
+        case 1:
+        {
+            int tempNum;
+            receiveMessage("Enter User Index: ", tempNum);
+            displayUserInfo(masterData, tempNum);
+        }
+        break;
+
+        default:
+            break;
+        }
+    }
+}
+
+int handleAdminSession(Admin &adminAcc, vector<Wallet> &masterData)
 {
     bool adminAuthenticated = false;
     int adminChoice;
@@ -108,7 +195,7 @@ int handleAdminSession(Admin& adminAcc, const vector<Wallet>& masterData)
             continue;
             break;
         case 4:
-            // userSpecificActions(masterData);
+            userSpecificActions(masterData);
             continue;
             break;
         case 5:

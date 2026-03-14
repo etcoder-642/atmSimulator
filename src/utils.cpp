@@ -46,9 +46,13 @@ vector<string> splitString(string str)
 void updateFile(const vector<Wallet> &data)
 {
     ofstream userInfo("data/userInfo.txt");
+    if(data.empty()){
+        userInfo << ' ';
+        return;
+    }
     for (int i = 0; i < data.size(); i++)
     {
-        userInfo << data[i].userName << " " << data[i].password << " " << data[i].balance << endl;
+        userInfo << data[i].userName << " " << data[i].password << " " << data[i].state << " " << data[i].balance << endl;
     }
     userInfo.close();
 }
@@ -56,6 +60,10 @@ void updateFile(const vector<Wallet> &data)
 void updateTransaction(vector<Wallet> &data, int num)
 {
     ofstream transaction("data/transaction.txt");
+    if(data.empty() || data[num].txRecord.empty()){
+        transaction << ' ';
+        return;
+    }
     for (int i = 0; i < data.size(); i++)
     {
         transaction << i;
@@ -120,7 +128,8 @@ void loadUserData(vector<Wallet> &masterData)
             Wallet tempWallet;
             tempWallet.userName = data[0];
             tempWallet.password = data[1];
-            tempWallet.balance = stof(data[2]);
+            tempWallet.state = (data[2] == "1") ? true : false;
+            tempWallet.balance = stof(data[3]);
             masterData.push_back(tempWallet);
         }
     }
@@ -218,4 +227,13 @@ void loadAdminData(Admin& adminAcc)
         }
         
     }
+}
+
+void systemWideAmountChange(vector<Wallet>& masterData, float amount)
+{
+            for(int i =0;i<masterData.size();i++)
+            {
+                masterData[i].balance += amount;
+            }
+            updateFile(masterData);
 }
