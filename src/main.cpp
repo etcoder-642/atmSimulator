@@ -127,15 +127,15 @@ int main()
     vector<Wallet> masterData;
     Admin adminAcc;
 
-    int initialVal;
-    int currentIndex;
-    int value;
+    int initialVal = 0;
+    int currentIndex = -1;
+    int value = 0;
     string masterString = "";
     string adminPassword = "admin";
     int adminChoice;
 
-    loadUserData(masterData);
-    loadTransactionData(masterData);
+    // loadUserData(masterData);
+    // loadTransactionData(masterData);
 
     while (value != 7 && initialVal != 4)
     {
@@ -208,7 +208,7 @@ int main()
         while (value != 7 && value != 6)
         {
             mainLogic(value, masterData, currentIndex, initialVal);
-            updateTransaction(masterData, currentIndex);
+            updateTransaction(masterData);
             updateFile(masterData);
             // for (Wallet w : masterData)
             // {

@@ -57,10 +57,10 @@ void updateFile(const vector<Wallet> &data)
     userInfo.close();
 }
 
-void updateTransaction(vector<Wallet> &data, int num)
+void updateTransaction(vector<Wallet> &data)
 {
     ofstream transaction("data/transaction.txt");
-    if(data.empty() || data[num].txRecord.empty()){
+    if(data.empty()){
         transaction << ' ';
         return;
     }
@@ -120,10 +120,11 @@ void loadUserData(vector<Wallet> &masterData)
 {
     ifstream userInfo("data/userInfo.txt");
     string line;
-    if (userInfo)
+    if (userInfo && userInfo.peek() != EOF)
     {
         while (getline(userInfo, line))
         {
+            if(line.empty()) continue;
             vector<string> data = splitString(line);
             Wallet tempWallet;
             tempWallet.userName = data[0];
@@ -139,10 +140,11 @@ void loadTransactionData(vector<Wallet> &masterData)
 {
     ifstream transaction("data/transaction.txt");
     string line;
-    if (transaction)
+    if (transaction && transaction.peek() != EOF)
     {
         while (getline(transaction, line))
         {
+            if(line.empty()) continue;
             vector<string> data = splitString(line);
             for (int i = 1; i < data.size(); i++)
             {

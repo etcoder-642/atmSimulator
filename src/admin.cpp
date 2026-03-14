@@ -119,6 +119,7 @@ void systemWideActions(vector<Wallet> &masterData)
                 masterData.clear();
                 masterData.shrink_to_fit();
                 updateFile(masterData);
+                updateTransaction(masterData);
                 displaySpecialMessage("ALL ACCOUNTS HAVE SUCCESSFULLY BEEN ERASED!");
             }
         }
@@ -128,10 +129,10 @@ void systemWideActions(vector<Wallet> &masterData)
     }
 }
 
-void userSpecificActions(const vector<Wallet> &masterData)
+void userSpecificActions(vector<Wallet> &masterData)
 {
     int userActionChoice;
-    while (userActionChoice != 7)
+    while (userActionChoice != 8)
     {
         displayUserSpecificActions(userActionChoice);
         switch (userActionChoice)
@@ -143,7 +144,80 @@ void userSpecificActions(const vector<Wallet> &masterData)
             displayUserInfo(masterData, tempNum);
         }
         break;
-
+        case 2:
+        {
+            int tempNum;
+            receiveMessage("Enter Index of Account to Freeze: ", tempNum);
+            masterData[tempNum].state = true;
+            updateFile(masterData);
+            displaySpecialMessage("Account Successfully Frozen!");
+        }
+        break;
+        case 3:
+        {
+            int tempNum;
+            receiveMessage("Enter Index of Account to Unfreeze: ", tempNum);
+            masterData[tempNum].state = false;
+            updateFile(masterData);
+            displaySpecialMessage("Account Successfully Unfrozen!");
+        }
+        break;
+        case 4:
+        {
+            int tempNum;
+            float amount;
+            receiveMessage("Enter Index of Account to Deposit to: ", tempNum);
+            receiveMessage("Enter Amount to Deposit: ", amount);
+            masterData[tempNum].balance += amount;
+            masterData[tempNum].txRecord.push_back(amount);
+            updateFile(masterData);
+            updateTransaction(masterData);
+            string tempString = "Successfully Deposited " + to_string(amount) + " Birr to " + masterData[tempNum].userName;
+            displaySpecialMessage(tempString);
+        }
+        break;
+        case 5:
+        {
+            int tempNum;
+            float amount;
+            receiveMessage("Enter Index of Account to Deduct from: ", tempNum);
+            receiveMessage("Enter Amount to be Deducted: ", amount);
+            masterData[tempNum].balance -= amount;
+            masterData[tempNum].txRecord.push_back(-amount);
+            updateFile(masterData);
+            updateTransaction(masterData);
+            string tempString = "Successfully Deducted " + to_string(amount) + " Birr from " + masterData[tempNum].userName;
+            displaySpecialMessage(tempString);
+        }
+        break;
+        case 6:
+        {
+            int tempNum;
+            int num;
+            receiveMessage("Enter Index of Account to Reset Password: ", tempNum);
+            receiveMessage("Are you sure you want to reset " + masterData[tempNum].userName + "'s Password ? (Enter 1 to Cancel or 2 to Proceed): ", num);
+            if(num == 1) continue;
+            else {
+                masterData[tempNum].password = "12345678";
+                updateFile(masterData);
+                displaySpecialMessage(masterData[tempNum].userName + "'s Password have been Successfully Resetted.");
+            }
+        }
+        break;
+        case 7:
+        {
+            int tempNum;
+            int num;
+            receiveMessage("Enter Index of Account to be Deleted: ", tempNum);
+            receiveMessage("Are you sure you want to Delete " + masterData[tempNum].userName + "'s Account? (Enter 1 to Cancel or 2 to Proceed): ", num);
+            if(num == 1) continue;
+            else {
+                displaySpecialMessage(masterData[tempNum].userName + "'s Account have been successfully deleted.");
+                masterData.erase(masterData.begin() + tempNum);
+                updateFile(masterData);
+                updateTransaction(masterData);
+            }
+        }
         default:
             break;
         }
