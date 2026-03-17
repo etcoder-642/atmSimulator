@@ -8,7 +8,6 @@ using namespace std;
 
 
 class Wallet  {
-  friend class Bank;
     private: 
       float balance;
       string userName;
@@ -16,14 +15,14 @@ class Wallet  {
       bool state; // true for frozen, false for active
       vector<float> txRecord;
     public:
-      void setState(bool &s) {
-        s = state;
+      void setState(bool s) {
+        state = s;
       }
       bool getState(){
         return state;
       }
       void setBalance(float s) {
-        s = balance;
+        balance = s;
       }
       float getBalance() {
         return balance;
@@ -46,6 +45,11 @@ class Wallet  {
       vector<float> getTxRecord(){
         return txRecord;
       }
+      void deposit(float amount);
+      bool withdraw(float amount);
+      void freeze();
+      void unfreeze();
+      bool checkNameExists(string name);
 };
 
 struct Admin

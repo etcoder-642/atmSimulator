@@ -20,7 +20,7 @@ bool Bank::checkNameExist(string name)
 {
     for (int i = 0; i < bank.size(); i++)
     {
-        if (bank[i].userName == name)
+        if (bank[i].checkNameExists(name))
         {
             return true;
         }
@@ -38,7 +38,7 @@ void Bank::updateFile()
     }
     for (int i = 0; i < bank.size(); i++)
     {
-        userInfo << bank[i].userName << " " << bank[i].password << " " << bank[i].state << " " << bank[i].balance << endl;
+        userInfo << bank[i].getUserName() << " " << bank[i].getPassword() << " " << bank[i].getState() << " " << bank[i].getBalance() << endl;
     }
     userInfo.close();
 }
@@ -54,9 +54,9 @@ void Bank::updateTransaction()
     for (int i = 0; i < bank.size(); i++)
     {
         transaction << i;
-        for (int j = 0; j < bank[i].txRecord.size(); j++)
+        for (int j = 0; j < bank[i].getTxRecord().size(); j++)
         {
-            transaction << " " << bank[i].txRecord[j];
+            transaction << " " << bank[i].getTxRecord()[j];
         }
         transaction << endl;
     }
@@ -66,22 +66,22 @@ void Bank::updateTransaction()
 void Bank::handleMoneyTransfer(int index, string receiverName, float amount)
 {
     bool checkSuccess = false;
-    if (bank[index].balance < amount)
+    if (bank[index].getBalance() < amount)
     {
         cout << "You don't have enough Amount!" << endl;
         return;
     }
     for (int i = 0; i < bank.size(); i++)
     {
-        if (receiverName == bank[i].userName)
+        if (receiverName == bank[i].getUserName())
         {
-            bank[index].balance -= amount;
-            bank[i].balance += amount;
-            bank[index].txRecord.push_back(-amount);
-            bank[i].txRecord.push_back(amount);
+            bank[index].withdraw(amount);
+            bank[i].deposit(amount);
+            bank[index].setTxRecord(-amount);
+            bank[i].setTxRecord(amount);
             cout << "Money Transfer Successful!" << endl;
-            cout << amount << " Birr withdrawn from: " << bank[index].userName << endl;
-            cout << amount << " Birr deposited to: " << bank[i].userName << endl;
+            cout << amount << " Birr withdrawn from: " << bank[index].getUserName() << endl;
+            cout << amount << " Birr deposited to: " << bank[i].getUserName() << endl;
             checkSuccess = true;
         }
     }
@@ -103,10 +103,10 @@ void Bank::loadUserData()
                 continue;
             vector<string> data = splitString(line);
             Wallet tempWallet;
-            tempWallet.userName = data[0];
-            tempWallet.password = data[1];
-            tempWallet.state = (data[2] == "1") ? true : false;
-            tempWallet.balance = stof(data[3]);
+            tempWallet.setUserName(data[0]);
+            tempWallet.setPassword(data[1]);
+            tempWallet.setState((data[2] == "1") ? true : false);
+            tempWallet.setBalance(stof(data[3]));
             bank.push_back(tempWallet);
         }
     }
@@ -125,7 +125,7 @@ void Bank::loadTransactionData()
             vector<string> data = splitString(line);
             for (int i = 1; i < data.size(); i++)
             {
-                bank[stoi(data[0])].txRecord.push_back(stof(data[i]));
+                bank[stoi(data[0])].setTxRecord(stof(data[i]));
             }
         }
     }
@@ -144,7 +144,7 @@ bool Bank::authenticateUser(string tempName, string tempPassword, int &index)
         int foundIndex = -1;
         for (int i = 0; i < bank.size(); i++)
         {
-            if (tempName == bank[i].userName)
+            if (tempName == bank[i].getUserName())
             {
                 foundIndex = i;
                 break;
@@ -157,10 +157,10 @@ bool Bank::authenticateUser(string tempName, string tempPassword, int &index)
         }
         else
         {
-            if (tempPassword == bank[foundIndex].password)
+            if (tempPassword == bank[foundIndex].getPassword())
             {
                 cout << "Successfully Logged In!" << endl;
-                cout << "Welcome " << bank[foundIndex].userName << endl;
+                cout << "Welcome " << bank[foundIndex].getUserName() << endl;
                 index = foundIndex;
                 return true;
             }
@@ -177,7 +177,7 @@ void Bank::systemWideAmountChange(float amount)
 {
     for (int i = 0; i < bank.size(); i++)
     {
-        bank[i].balance += amount;
+        bank[i].deposit(amount);
     }
     updateFile();
 }
@@ -190,34 +190,32 @@ void Bank::deleteAllAccounts()
 
 void Bank::freezeAccount(int index)
 {
-    bank[index].state = true;
+    bank[index].freeze();
 }
 
 void Bank::unfreezeAccount(int index)
 {
-    bank[index].state = false;
+    bank[index].unfreeze();
 }
 
 void Bank::depositToAccount(int index, float amount)
 {
-    bank[index].balance += amount;
-    bank[index].txRecord.push_back(amount);
+    bank[index].deposit(amount);
 }
 
 void Bank::deductFromAccount(int index, float amount)
 {
-    if (bank[index].balance < amount)
+    if (bank[index].withdraw(amount) == false)
     {
         cout << "You don't have enough Amount!" << endl;
         return;
     }
-    bank[index].balance -= amount;
-    bank[index].txRecord.push_back(-amount);
+;
 }
 
 void Bank::setPassword(int index, string newPassword)
 {
-    bank[index].password = newPassword;
+    bank[index].setPassword(newPassword);
 }
 
 void Bank::deleteAccount(int index)
@@ -229,7 +227,7 @@ void Bank::freezeAllAccounts()
 {
     for (int i = 0; i < bank.size(); i++)
     {
-        bank[i].state = true;
+        bank[i].setState(true);
     }
 }
 
@@ -237,6 +235,6 @@ void Bank::unfreezeAllAccounts()
 {
     for (int i = 0; i < bank.size(); i++)
     {
-        bank[i].state = false;
+        bank[i].setState(false);
     }
 }
