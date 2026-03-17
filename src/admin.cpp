@@ -1,5 +1,3 @@
-#include <iostream>
-#include <string>
 #include <cstdlib>
 #include <fstream>
 #include <vector>
@@ -8,31 +6,33 @@
 #include "../include/Wallet.h"
 #include "../include/display.h"
 #include "../include/utils.h"
+#include "../include/Bank.h"
 
 using namespace std;
 
-void showAnalytics(const vector<Wallet> &masterData)
+void showAnalytics(Bank &bank)
 {
+    vector<Wallet> wallets = bank.getWallet();
     float totalLiquidity = 0;
     float transactionVol = 0;
     float netFlow = 0;
     int transactionNum = 0;
     float avWealth = 0;
-    int totalUsers = masterData.size();
-    for (int i = 0; i < masterData.size(); i++)
+    int totalUsers = bank.size();
+    for (int i = 0; i < bank.size(); i++)
     {
-        totalLiquidity += masterData[i].balance;
-        for (int j = 0; j < masterData[i].txRecord.size(); j++)
+        totalLiquidity += wallets[i].getBalance();
+        for (int j = 0; j < wallets[i].getTxRecord().size(); j++)
         {
-            netFlow += masterData[i].txRecord[j];
+            netFlow += wallets[i].getTxRecord()[j];
             transactionNum++;
-            if (masterData[i].txRecord[j] > 0)
+            if (wallets[i].getTxRecord()[j] > 0)
             {
-                transactionVol += masterData[i].txRecord[j];
+                transactionVol += wallets[i].getTxRecord()[j];
             }
-            else if (masterData[i].txRecord[j] < 0)
+            else if (wallets[i].getTxRecord()[j] < 0)
             {
-                transactionVol += -masterData[i].txRecord[j];
+                transactionVol += -wallets[i].getTxRecord()[j];
             }
             else
                 continue;
@@ -42,23 +42,25 @@ void showAnalytics(const vector<Wallet> &masterData)
     displayAdminAnalytics(totalLiquidity, transactionVol, netFlow, transactionNum, totalUsers, avWealth);
 }
 
-void showAllAccounts(const vector<Wallet> &masterData)
+void showAllAccounts(Bank &mainbank)
 {
+    vector<Wallet> wallets = mainbank.getWallet();
     vector<int> trxnNums;
-    for (int i = 0; i < masterData.size(); i++)
+    for (int i = 0; i < mainbank.size(); i++)
     {
         int tempNum = 0;
-        for (int j = 0; j < masterData[i].txRecord.size(); j++)
+        for (int j = 0; j < wallets[i].getTxRecord().size(); j++)
         {
             tempNum++;
         }
         trxnNums.push_back(tempNum);
     }
-    displayAllAccounts(masterData, trxnNums);
+    displayAllAccounts(mainbank, trxnNums);
 }
 
-void systemWideActions(vector<Wallet> &masterData)
+void systemWideActions(Bank &bank)
 {
+    vector<Wallet> wallets = bank.getWallet();
     int systemActionChoice;
     while (systemActionChoice != 6)
     {
@@ -70,7 +72,7 @@ void systemWideActions(vector<Wallet> &masterData)
             int amount;
             cout << "Enter Amount to Deposit: ";
             cin >> amount;
-            systemWideAmountChange(masterData, amount);
+            bank.systemWideAmountChange(amount);
             displaySystemWideAccountChange(amount);
         }
         break;
@@ -79,7 +81,7 @@ void systemWideActions(vector<Wallet> &masterData)
             int amount;
             cout << "Enter Amount to Withdrawn: ";
             cin >> amount;
-            systemWideAmountChange(masterData, -amount);
+            bank.systemWideAmountChange(-amount);
             displaySystemWideAccountChange(-amount);
         }
         break;
@@ -91,22 +93,16 @@ void systemWideActions(vector<Wallet> &masterData)
                 continue;
             else
             {
-                for (int i = 0; i < masterData.size(); i++)
-                {
-                    masterData[i].state = true;
-                }
-                updateFile(masterData);
+                bank.freezeAllAccounts();
+                bank.updateFile();
                 displaySpecialMessage("All Accounts Successfully Frozen");
             }
         }
         break;
         case 4:
         {
-            for (int i = 0; i < masterData.size(); i++)
-            {
-                masterData[i].state = false;
-            }
-            updateFile(masterData);
+            bank.unfreezeAllAccounts();
+            bank.updateFile();
             displaySpecialMessage("All Accounts Successfully Unfrozen");
         }
         break;
@@ -116,10 +112,9 @@ void systemWideActions(vector<Wallet> &masterData)
             receiveMessage("Are you sure you want to do it? (Enter 1 to cancel or 2 to proceed): ", userChoice);
             if(userChoice == 1) continue;
             else {
-                masterData.clear();
-                masterData.shrink_to_fit();
-                updateFile(masterData);
-                updateTransaction(masterData);
+                bank.deleteAllAccounts();
+                bank.updateFile();
+                bank.updateTransaction();
                 displaySpecialMessage("ALL ACCOUNTS HAVE SUCCESSFULLY BEEN ERASED!");
             }
         }
@@ -129,8 +124,9 @@ void systemWideActions(vector<Wallet> &masterData)
     }
 }
 
-void userSpecificActions(vector<Wallet> &masterData)
+void userSpecificActions(Bank &bank)
 {
+    vector<Wallet> wallets = bank.getWallet();
     int userActionChoice;
     while (userActionChoice != 8)
     {
@@ -141,15 +137,15 @@ void userSpecificActions(vector<Wallet> &masterData)
         {
             int tempNum;
             receiveMessage("Enter User Index: ", tempNum);
-            displayUserInfo(masterData, tempNum);
+            displayUserInfo(bank, tempNum);
         }
         break;
         case 2:
         {
             int tempNum;
             receiveMessage("Enter Index of Account to Freeze: ", tempNum);
-            masterData[tempNum].state = true;
-            updateFile(masterData);
+            bank.freezeAccount(tempNum);
+            bank.updateFile();
             displaySpecialMessage("Account Successfully Frozen!");
         }
         break;
@@ -157,8 +153,8 @@ void userSpecificActions(vector<Wallet> &masterData)
         {
             int tempNum;
             receiveMessage("Enter Index of Account to Unfreeze: ", tempNum);
-            masterData[tempNum].state = false;
-            updateFile(masterData);
+            bank.unfreezeAccount(tempNum);
+            bank.updateFile();
             displaySpecialMessage("Account Successfully Unfrozen!");
         }
         break;
@@ -168,11 +164,10 @@ void userSpecificActions(vector<Wallet> &masterData)
             float amount;
             receiveMessage("Enter Index of Account to Deposit to: ", tempNum);
             receiveMessage("Enter Amount to Deposit: ", amount);
-            masterData[tempNum].balance += amount;
-            masterData[tempNum].txRecord.push_back(amount);
-            updateFile(masterData);
-            updateTransaction(masterData);
-            string tempString = "Successfully Deposited " + to_string(amount) + " Birr to " + masterData[tempNum].userName;
+            bank.depositToAccount(tempNum, amount);
+            bank.updateFile();
+            bank.updateTransaction();
+            string tempString = "Successfully Deposited " + to_string(amount) + " Birr to " + wallets[tempNum].getUserName();
             displaySpecialMessage(tempString);
         }
         break;
@@ -182,11 +177,10 @@ void userSpecificActions(vector<Wallet> &masterData)
             float amount;
             receiveMessage("Enter Index of Account to Deduct from: ", tempNum);
             receiveMessage("Enter Amount to be Deducted: ", amount);
-            masterData[tempNum].balance -= amount;
-            masterData[tempNum].txRecord.push_back(-amount);
-            updateFile(masterData);
-            updateTransaction(masterData);
-            string tempString = "Successfully Deducted " + to_string(amount) + " Birr from " + masterData[tempNum].userName;
+            bank.deductFromAccount(tempNum, amount);
+            bank.updateFile();
+            bank.updateTransaction();
+            string tempString = "Successfully Deducted " + to_string(amount) + " Birr from " + wallets[tempNum].getUserName();
             displaySpecialMessage(tempString);
         }
         break;
@@ -195,12 +189,12 @@ void userSpecificActions(vector<Wallet> &masterData)
             int tempNum;
             int num;
             receiveMessage("Enter Index of Account to Reset Password: ", tempNum);
-            receiveMessage("Are you sure you want to reset " + masterData[tempNum].userName + "'s Password ? (Enter 1 to Cancel or 2 to Proceed): ", num);
+            receiveMessage("Are you sure you want to reset " + wallets[tempNum].getUserName() + "'s Password ? (Enter 1 to Cancel or 2 to Proceed): ", num);
             if(num == 1) continue;
             else {
-                masterData[tempNum].password = "12345678";
-                updateFile(masterData);
-                displaySpecialMessage(masterData[tempNum].userName + "'s Password have been Successfully Resetted.");
+                bank.setPassword(tempNum, "12345678");
+                bank.updateFile();
+                displaySpecialMessage(wallets[tempNum].getUserName() + "'s Password have been Successfully Resetted.");
             }
         }
         break;
@@ -209,13 +203,13 @@ void userSpecificActions(vector<Wallet> &masterData)
             int tempNum;
             int num;
             receiveMessage("Enter Index of Account to be Deleted: ", tempNum);
-            receiveMessage("Are you sure you want to Delete " + masterData[tempNum].userName + "'s Account? (Enter 1 to Cancel or 2 to Proceed): ", num);
+            receiveMessage("Are you sure you want to Delete " + wallets[tempNum].getUserName() + "'s Account? (Enter 1 to Cancel or 2 to Proceed): ", num);
             if(num == 1) continue;
             else {
-                displaySpecialMessage(masterData[tempNum].userName + "'s Account have been successfully deleted.");
-                masterData.erase(masterData.begin() + tempNum);
-                updateFile(masterData);
-                updateTransaction(masterData);
+                displaySpecialMessage(wallets[tempNum].getUserName() + "'s Account have been successfully deleted.");
+                bank.deleteAccount(tempNum);
+                bank.updateFile();
+                bank.updateTransaction();
             }
         }
         default:
@@ -224,7 +218,8 @@ void userSpecificActions(vector<Wallet> &masterData)
     }
 }
 
-int handleAdminSession(Admin &adminAcc, vector<Wallet> &masterData)
+
+int handleAdminSession(Admin &adminAcc, Bank& bank)
 {
     bool adminAuthenticated = false;
     int adminChoice;
@@ -257,19 +252,19 @@ int handleAdminSession(Admin &adminAcc, vector<Wallet> &masterData)
         switch (adminChoice)
         {
         case 1:
-            showAnalytics(masterData);
+            showAnalytics(bank);
             continue;
             break;
         case 2:
-            showAllAccounts(masterData);
+            showAllAccounts(bank);
             continue;
             break;
         case 3:
-            systemWideActions(masterData);
+            systemWideActions(bank);
             continue;
             break;
         case 4:
-            userSpecificActions(masterData);
+            userSpecificActions(bank);
             continue;
             break;
         case 5:

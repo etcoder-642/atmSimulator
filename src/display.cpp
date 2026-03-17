@@ -2,11 +2,13 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+
 #include "../include/Wallet.h"
+#include "../include/Bank.h"
 
 using namespace std;
 
-void userDisplay(string user, int &value, float &balance)
+void userDisplay(string user, int &value, float balance)
 {
     cout << string(80, '=') << endl;
     cout << "Choose what to do: " << endl;
@@ -52,26 +54,26 @@ void initialPage(int &initialVal)
     cout << endl;
 }
 
-void displayTransactionHistory(const vector<Wallet> &data, int num)
+void displayTransactionHistory(Bank &bank, int num)
 {
     cout << string(80, '=') << endl;
-    cout << "============================ " << data[num].userName << "'s TRANSACTION HISTORY ===================" << endl;
-    if (data[num].txRecord.size() == 0)
+    cout << "============================ " << bank.getWallet()[num].getUserName() << "'s TRANSACTION HISTORY ===================" << endl;
+    if (bank.getWallet()[num].getTxRecord().size() == 0)
     {
         cout << " YOU HAVE NO TRANSACTION HISTORY" << endl;
         cout << string(80, '=') << endl;
         cout << endl;
         return;
     }
-    for (int i = 0; i < data[num].txRecord.size(); i++)
+    for (int i = 0; i < bank.getWallet()[num].getTxRecord().size(); i++)
     {
-        if (data[num].txRecord[i] > 0)
+        if (bank.getWallet()[num].getTxRecord()[i] > 0)
         {
-            cout << "Deposit: " << fixed << setprecision(2) << data[num].txRecord[i] << endl;
+            cout << "Deposit: " << fixed << setprecision(2) << bank.getWallet()[num].getTxRecord()[i] << endl;
         }
-        else if (data[num].txRecord[i] < 0)
+        else if (bank.getWallet()[num].getTxRecord()[i] < 0)
         {
-            cout << "Withdraw: " << fixed << setprecision(2) << data[num].txRecord[i] << endl;
+            cout << "Withdraw: " << fixed << setprecision(2) << bank.getWallet()[num].getTxRecord()[i] << endl;
         }
     }
     cout << string(80, '=') << endl;
@@ -100,12 +102,17 @@ void displayAdminDashBoard(int &adminChoice, string admin)
 
 void displaySignUpPage(Wallet &myWallet)
 {
+    string tempN, tempP;
+    float tempB;
     cout << "Enter User Name: ";
-    cin >> myWallet.userName;
+    cin >> tempN;
+    myWallet.setUserName(tempN);
     cout << "Enter Account Password: ";
-    cin >> myWallet.password;
+    cin >> tempP;
+    myWallet.setPassword(tempP);
     cout << "Enter Current Account Balance: ";
-    cin >> myWallet.balance;
+    cin >> tempB;
+    myWallet.setBalance(tempB);
 }
 
 void displayLogInPage(string &tempName, string &tempPassword)
@@ -159,8 +166,9 @@ void displayAdminAnalytics(float totalLiquidity, float transactionVol, float net
     cout << string(80, '=') << endl;
 }
 
-void displayAllAccounts(const vector<Wallet> &masterData, vector<int> trxnNums)
+void displayAllAccounts(Bank &bank, vector<int> trxnNums)
 {
+    vector<Wallet> w = bank.getWallet();
     cout << string(80, '-') << endl;
     cout << string(80, '=') << endl;
     cout << "================================= USER ACCOUNTS ================================" << endl;
@@ -169,11 +177,11 @@ void displayAllAccounts(const vector<Wallet> &masterData, vector<int> trxnNums)
          << left << setw(23) << "BALANCE"
          << left << setw(31) << "TOTAL NUMBER OF TRANSACTIONS" << endl;
 
-    for (int i = 0; i < masterData.size(); i++)
+    for (int i = 0; i < bank.size(); i++)
     {
         cout << left << setw(3) << i
-             << left << setw(23) << masterData[i].userName
-             << left << setw(23) << fixed << setprecision(2) << masterData[i].balance
+             << left << setw(23) << w[i].getUserName()
+             << left << setw(23) << fixed << setprecision(2) << w[i].getBalance()
              << left << setw(31) << trxnNums[i] << endl;
     }
     cout << string(80, '=') << endl;
@@ -216,24 +224,25 @@ void displayUserSpecificActions(int &value)
     cout << endl;
 }
 
-void displayUserInfo(vector<Wallet> masterData, int num)
+void displayUserInfo(Bank bank, int num)
 {
+    vector<Wallet> wallets = bank.getWallet();
     cout << string(80, '=') << endl;
-    cout << left << setw(60) << "User Name: " << masterData[num].userName << endl;
-    cout << left << setw(60) << "User Balance: " << masterData[num].balance << endl;
+    cout << left << setw(60) << "User Name: " << wallets[num].getUserName() << endl;
+    cout << left << setw(60) << "User Balance: " << wallets[num].getBalance() << endl;
     cout << string(80, '-') << endl;
     cout << setw(80) << "User Transaction History" << endl;
     cout << string(80, '-') << endl;
     cout << left << setw(60) << "Transaction Type" << "Volume" << endl;
-    for (int i = 0; i < masterData[num].txRecord.size(); i++)
+    for (int i = 0; i < wallets[num].getTxRecord().size(); i++)
     {
-        if (masterData[num].txRecord[i] > 0)
+        if (wallets[num].getTxRecord()[i] > 0)
         {
-            cout << left << setw(60) << "Deposit" << masterData[num].txRecord[i] << endl;
+            cout << left << setw(60) << "Deposit" << wallets[num].getTxRecord()[i] << endl;
         }
         else
         {
-            cout << left << setw(60) << "Withdraw" << masterData[num].txRecord[i] << endl;
+            cout << left << setw(60) << "Withdraw" << wallets[num].getTxRecord()[i] << endl;
         }
     }
     cout << string(80, '=') << endl;

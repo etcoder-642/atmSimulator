@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "../include/Wallet.h"
+#include "../include/Bank.h"
 #include "../include/display.h"
 #include "../include/utils.h"
 #include "../include/admin.h"
@@ -21,26 +22,27 @@ using namespace std;
         - User can check Wallet Balance
  */
 
-void accountAction(int value, float amount, vector<Wallet> &data, int num)
+void accountAction(int value, float amount, Bank &bank, int num)
 {
+    vector<Wallet> tempWallet = bank.getWallet();
     switch (value)
     {
     case 1:
-        data[num].balance += amount;
-        cout << data[num].userName << ", You have successfully deposited " << amount << " Birr" << endl;
-        data[num].txRecord.push_back(amount);
+        tempWallet[num].setBalance(tempWallet[num].getBalance() + amount);
+        cout << tempWallet[num].getUserName() << ", You have successfully deposited " << amount << " Birr" << endl;
+        tempWallet[num].setTxRecord(amount);
         break;
     case 2:
     {
-        if (amount > data[num].balance)
+        if (amount > tempWallet[num].getBalance())
         {
             cout << "Oops! You're broke for that!" << endl;
         }
         else
         {
-            data[num].balance -= amount;
-            cout << data[num].userName << ", You have successfully withdrawn " << amount << " Birr" << endl;
-            data[num].txRecord.push_back(-amount);
+            tempWallet[num].setBalance(tempWallet[num].getBalance() - amount);
+            cout << tempWallet[num].getUserName() << ", You have successfully withdrawn " << amount << " Birr" << endl;
+            tempWallet[num].setTxRecord(-amount);
         }
     }
     break;
@@ -49,54 +51,54 @@ void accountAction(int value, float amount, vector<Wallet> &data, int num)
     }
 }
 
-void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
+void mainLogic(int &value, Bank &bank, int num, int &initialVal)
 {
     float amount;
     switch (value)
     {
     case 1:
     {
-        if(data[num].state){
-            displayAccountFreezeMessage(data[num].userName);
-            userDisplay(data[num].userName, value, data[num].balance);
+        if(bank.getWallet()[num].getState()){
+            displayAccountFreezeMessage(bank.getWallet()[num].getUserName());
+            userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
             return;
         }
         cout << "Enter Amount to be Deposited: ";
         cin >> amount;
-        accountAction(value, amount, data, num);
-        userDisplay(data[num].userName, value, data[num].balance);
+        accountAction(value, amount, bank, num);
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 2:
     {
-        if(data[num].state){
-            displayAccountFreezeMessage(data[num].userName);
-            userDisplay(data[num].userName, value, data[num].balance);
+        if(bank.getWallet()[num].getState()){
+            displayAccountFreezeMessage(bank.getWallet()[num].getUserName());
+            userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
             return;
         }
         cout << "Enter Amount to withdraw: ";
         cin >> amount;
-        accountAction(value, amount, data, num);
-        userDisplay(data[num].userName, value, data[num].balance);
+        accountAction(value, amount, bank, num);
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 3:
     {
-        displayBalance(data[num].userName, data[num].balance);
-        userDisplay(data[num].userName, value, data[num].balance);
+        displayBalance(bank.getWallet()[num].getUserName(), bank.getWallet()[num].getBalance());
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 4:
     {
-        displayTransactionHistory(data, num);
-        userDisplay(data[num].userName, value, data[num].balance);
+        displayTransactionHistory(bank, num);
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 5:
     {
-        if(data[num].state){
-            displayAccountFreezeMessage(data[num].userName);
-            userDisplay(data[num].userName, value, data[num].balance);
+        if(bank.getWallet()[num].getState()){
+            displayAccountFreezeMessage(bank.getWallet()[num].getUserName());
+            userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
             return;
         }
         string receiverName;
@@ -105,8 +107,8 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
         cin >> receiverName;
         cout << "Enter Amount to send: ";
         cin >> sentAmount;
-        handleMoneyTransfer(data, num, receiverName, sentAmount);
-        userDisplay(data[num].userName, value, data[num].balance);
+        bank.handleMoneyTransfer(num, receiverName, sentAmount);
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 6:
@@ -124,7 +126,7 @@ void mainLogic(int &value, vector<Wallet> &data, int num, int &initialVal)
 int main()
 {
 
-    vector<Wallet> masterData;
+    Bank mainbank;
     Admin adminAcc;
 
     int initialVal = 0;
@@ -134,8 +136,8 @@ int main()
     string adminPassword = "admin";
     int adminChoice;
 
-    // loadUserData(masterData);
-    // loadTransactionData(masterData);
+    mainbank.loadUserData();
+    mainbank.loadTransactionData();
 
     while (value != 7 && initialVal != 4)
     {
@@ -155,20 +157,19 @@ int main()
             {
                 Wallet myWallet;
                 displaySignUpPage(myWallet);
-                if (checkNameExist(masterData, myWallet.userName))
+                if (mainbank.checkNameExist(myWallet.getUserName()))
                 {
                     cout << "Provided name already exists." << endl;
                     continue;
                 }
-                masterData.push_back(myWallet);
+                mainbank.addValue(myWallet);
                 // for (Wallet w : masterData)
                 // {
-                //     masterString += w.userName + " " + w.password + " " + to_string(w.balance) + '\n';
+                //     masterString += w.getUserName() + " " + w.getPassword() + " " + to_string(w.getBalance()) + '\n';
                 // }
-                currentIndex = masterData.size() - 1;
-                cout << masterString;
-                cout << myWallet.userName << " " << myWallet.password << " " << myWallet.balance << endl;
-                updateFile(masterData);
+                currentIndex = mainbank.size() - 1;
+                cout << myWallet.getUserName() << " " << myWallet.getPassword() << " " << myWallet.getBalance() << endl;
+                mainbank.updateFile();
                 authenticated = true;
             }
             break;
@@ -178,7 +179,7 @@ int main()
                 string tempPassword;
 
                 displayLogInPage(tempName, tempPassword);
-                if (authenticateUser(masterData, tempName, tempPassword, currentIndex))
+                if (mainbank.authenticateUser(tempName, tempPassword, currentIndex))
                     authenticated = true;
                 else
                 {
@@ -189,7 +190,7 @@ int main()
             break;
             case 3:
             {
-                if(handleAdminSession(adminAcc, masterData) == 6) 
+                if(handleAdminSession(adminAcc, mainbank) == 6) 
                 {
                     initialVal = 4;
                 };
@@ -204,15 +205,15 @@ int main()
         if (initialVal == 4)
             break;
 
-        userDisplay(masterData[currentIndex].userName, value, masterData[currentIndex].balance);
+        userDisplay(mainbank.getWallet()[currentIndex].getUserName(), value, mainbank.getWallet()[currentIndex].getBalance());
         while (value != 7 && value != 6)
         {
-            mainLogic(value, masterData, currentIndex, initialVal);
-            updateTransaction(masterData);
-            updateFile(masterData);
+            mainLogic(value, mainbank, currentIndex, initialVal);
+            mainbank.updateTransaction();
+            mainbank.updateFile();
             // for (Wallet w : masterData)
             // {
-            //     masterString += w.userName + " " + w.password + " " + to_string(w.balance) + " " + to_string(w.txRecord[0]) + " " + to_string(w.txRecord[1]);
+            //     masterString += w.getUserName() + " " + w.getPassword() + " " + to_string(w.getBalance()) + " " + to_string(w.getTxRecord()[0]) + " " + to_string(w.getTxRecord()[1]);
             // }
             // cout << masterString;
         }

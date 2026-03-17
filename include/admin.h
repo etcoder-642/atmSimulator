@@ -11,8 +11,9 @@
 #include "../include/Wallet.h"
 #include "../include/display.h"
 #include "../include/utils.h"
+#include "../include/Bank.h"
 
-int handleAdminSession(Admin &adminAcc, vector<Wallet> &masterData);
+int handleAdminSession(Admin &adminAcc, Bank& bank);
 
 #endif
 
