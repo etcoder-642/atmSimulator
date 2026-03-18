@@ -27,3 +27,4 @@ obj/
 # Database/Private files
 userInfo.txt
 data/*.txt
+data/
