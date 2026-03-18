@@ -6,6 +6,7 @@
 #include <vector>
 #include "Wallet.h"
 #include "Bank.h"
+#include "ticTacToe.h"
 
 using namespace std;
 
@@ -26,6 +27,9 @@ void displayUserInfo(Bank bank, int num);
 void displaySystemWideAccountChange(float amount);
 void displayAccountFreezeMessage(string name);
 void displaySpecialMessage(string message);
+void displayBoard(const TicTacToe &board);
+void displayGamesList(int &gameVal);
+void enterYourMove(int &row, int &col);
 
 template <typename T>
 void receiveMessage(string message, T& var)

@@ -5,6 +5,8 @@
 
 #include "../include/Wallet.h"
 #include "../include/Bank.h"
+#include "../include/ticTacToe.h"
+#include "../include/display.h"
 
 using namespace std;
 
@@ -18,8 +20,9 @@ void userDisplay(string user, int &value, float balance)
     cout << "3. Check Balance" << endl;
     cout << "4. See Transaction History" << endl;
     cout << "5. Transfer Money" << endl;
-    cout << "6. Log Out" << endl;
-    cout << "7. Exit" << endl;
+    cout << "6. Play Games" << endl;
+    cout << "7. Log Out" << endl;
+    cout << "8. Exit" << endl;
     cout << string(80, '-') << endl;
     cin >> value;
     cout << string(80, '=') << endl;
@@ -279,3 +282,43 @@ void displaySpecialMessage(string message)
     cout << endl;  
 }
 
+void displayBoard(const TicTacToe &board){
+    cout << string(80, '=') << endl;
+    cout << "============================ TIC TAC TOE BOARD ===============================" << endl;
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            cout << " " << board.getBoard()[i][j] << " ";
+            if (j < 2)
+            {
+                cout << "|";
+            }
+        }
+        cout << endl;
+        if (i < 2)
+        {
+            cout << string(11, '-') << endl;
+        }
+    }
+    cout << string(80, '=') << endl;
+}
+
+void enterYourMove(int &row, int &col){
+    cout << "Enter Row (0-2): ";
+    cin >> row;
+    cout << "Enter Column (0-2): ";
+    cin >> col;
+}
+
+
+void displayGamesList(int &gameVal) {
+    cout << string(80, '=') << endl;
+    cout << "============================ GAMES LIST ===============================" << endl;
+    cout << "1. Tic Tac Toe (COMING SOON)" << endl;
+    cout << "2. Snake Game (COMING SOON)" << endl;
+    cout << "3. Game of Life (COMING SOON)" << endl;
+    cout << "4. Back" << endl;
+    cin >> gameVal;
+    cout << string(80, '=') << endl;
+}

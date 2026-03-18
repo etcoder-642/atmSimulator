@@ -8,6 +8,7 @@
 #include "../include/display.h"
 #include "../include/utils.h"
 #include "../include/admin.h"
+#include "../include/ticTacToe.h"
 
 using namespace std;
 
@@ -113,10 +114,47 @@ void mainLogic(int &value, Bank &bank, int num, int &initialVal)
     break;
     case 6:
     {
-        initialPage(initialVal);
+        int gameVal;
+        displayGamesList(gameVal);
+        while(gameVal != 4){
+            switch (gameVal)
+            {
+            case 1:
+                /* code */
+                TicTacToe game;
+                game.initializeBoard();
+                while(game.checkWin() == 0 && !game.isBoardFull()){
+                    displayBoard(game);
+                    int row, col;
+                    enterYourMove(row, col);
+                    game.makeMove(row, col);
+                    game.checkWin();
+                    game.switchPlayer();
+                }
+                if(game.checkWin() == 1){
+                    displaySpecialMessage("Congratulations! You won the game!");
+                }
+                else if(game.checkWin() == 2){
+                    displaySpecialMessage("Oh no! You lost the game!");
+                }
+                else{
+                    displaySpecialMessage("It's a draw!");
+                }
+                break;
+            
+            default:
+                break;
+            }
+        }
+        userDisplay(bank.getWallet()[num].getUserName(), value, bank.getWallet()[num].getBalance());
     }
     break;
     case 7:
+    {
+        initialPage(initialVal);
+    }
+    break;
+    case 8:
         break;
     default:
         break;
@@ -139,7 +177,7 @@ int main()
     mainbank.loadUserData();
     mainbank.loadTransactionData();
 
-    while (value != 7 && initialVal != 4)
+    while (value != 8 && initialVal != 4)
     {
         value = 0;
 
@@ -206,7 +244,7 @@ int main()
             break;
 
         userDisplay(mainbank.getWallet()[currentIndex].getUserName(), value, mainbank.getWallet()[currentIndex].getBalance());
-        while (value != 7 && value != 6)
+        while (value != 8 && value != 7)
         {
             mainLogic(value, mainbank, currentIndex, initialVal);
             mainbank.updateTransaction();
