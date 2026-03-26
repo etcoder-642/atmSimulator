@@ -128,18 +128,21 @@ void mainLogic(int &value, Bank &bank, int num, int &initialVal)
                     int row, col;
                     enterYourMove(row, col);
                     game.makeMove(row, col);
-                    game.checkWin();
                     game.switchPlayer();
                 }
                 if(game.checkWin() == 1){
                     displaySpecialMessage("Congratulations! You won the game!");
+                    displayBoard(game);
                 }
                 else if(game.checkWin() == 2){
                     displaySpecialMessage("Oh no! You lost the game!");
+                    displayBoard(game);
                 }
                 else{
                     displaySpecialMessage("It's a draw!");
+                    displayBoard(game);
                 }
+                gameVal = 4;
                 break;
             
             default:
