@@ -32,3 +32,6 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f src/*.o
 	rm -rf bin
+
+clean:
+	rm -f *.o virtualDisk
